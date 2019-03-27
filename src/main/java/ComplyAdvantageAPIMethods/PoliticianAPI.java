@@ -1,13 +1,15 @@
 package ComplyAdvantageAPIMethods;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 public class PoliticianAPI {
 
-    static Response response;
+    Response response;
+    //PoliticianAPI apAPI = new PoliticianAPI();
 
-    public static Response addPolitician(String name, String country, String yob, String position, int risk) {
+    public Response addPolitician(String name, String country, String yob, String position, int risk) {
 
         response =
                 RestAssured.given().
@@ -28,18 +30,17 @@ public class PoliticianAPI {
         return response;
     }
 
-    public static Response getPolitician() {
+    public Response getPolitician(String url) {
+
         response =
-                RestAssured.given().
-                        when().
-                        header("Content-Type", "application/json").
-                        get("http://ec2-34-251-162-89.eu-west-1.compute.amazonaws.com/peps");
-        response.then().
-                assertThat().log().all().
-                statusCode(201);
+                RestAssured.given()
+                .queryParam("sort" , "createdAt")
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when().get(url)
+                .then().statusCode(200).extract().response();
 
-
-        return response;
+                return response;
     }
 
 }
